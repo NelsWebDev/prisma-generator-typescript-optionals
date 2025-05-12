@@ -1,6 +1,6 @@
 # Prisma TypeScript Interfaces Generator
 
-`NelsWebDev/prisma-generator-typescript-optionals` is a fork of [mogzol/prisma-generator-typescript-interfaces](https://github.com/mogzol/prisma-generator-typescript-interfaces) which coverts nulls to undefined and coverts null unions to optionals when _optionalNullables_ is set to true.
+`nelswebdev/prisma-generator-typescript-optionals` is a fork of [mogzol/prisma-generator-typescript-interfaces](https://github.com/mogzol/prisma-generator-typescript-interfaces) which coverts nulls to undefined and coverts null unions to optionals when _optionalNullables_ is set to true.
 
 This is a [Prisma generator](https://www.prisma.io/docs/concepts/components/prisma-schema/generators) that creates zero-dependency TypeScript interfaces from Prisma schema.
 
@@ -16,14 +16,14 @@ The original package keeps prisma type safety since nulls are still used. Howeve
 To use this generator, first install the package:
 
 ```
-npm install --save-dev @NelsWebDev/prisma-generator-typescript-optionals
+npm install --save-dev @nelswebdev/prisma-generator-typescript-optionals
 ```
 
 Next add the generator to your Prisma schema:
 
 ```prisma
 generator typescriptInterfaces {
-  provider = "@NelsWebDev/prisma-generator-typescript-optionals"
+  provider = "@nelswebdev/prisma-generator-typescript-optionals"
 }
 ```
 
@@ -67,14 +67,14 @@ generator client {
 }
 
 generator typescriptInterfaces {
-  provider = "@NelsWebDev/prisma-generator-typescript-optionals"
+  provider = "@nelswebdev/prisma-generator-typescript-optionals"
   output   = "../src/dto/interfaces.ts"
   prettier = true
   optionalNullables = true
 }
 
 generator typescriptInterfacesJson {
-  provider    = "@NelsWebDev/prisma-generator-typescript-optionals"
+  provider    = "@nelswebdev/prisma-generator-typescript-optionals"
   output      = "../src/dto/json-interfaces.ts"
   modelSuffix = "Json"
   dateType    = "string"
