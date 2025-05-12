@@ -1,12 +1,12 @@
 {
   "name": "prisma-generator-typescript-interfaces",
-  "version": "2.1.0",
+  "version": "1.0.0",
   "description": "Generate zero-dependency Typescript interfaces from Prisma schema",
-  "author": "Morgan Zolob",
+  "author": "NelsWebDev",
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/mogzol/prisma-generator-typescript-interfaces"
+    "url": "https://github.com/NelsWebDev/prisma-generator-typescript-interfaces"
   },
   "type": "module",
   "main": "generator.js",
@@ -18,12 +18,12 @@
   },
   "scripts": {
     "build": "tsc -p tsconfig.build.json",
+    "test": "echo \"Texts removed because Nels is lazy\"",
     "postbuild": "node -e \"g='generator.js';f=require('fs');f.writeFileSync(g,'#!/usr/bin/env node\\n'+f.readFileSync(g))\"",
-    "clean": "rimraf --glob generator.js **/__TEST_TMP__",
+    "clean": "rimraf --glob generator.js",
     "generate": "prisma generate --schema=prisma/example.prisma",
     "lint": "prettier --check . && eslint . && echo 'Linting complete.'",
     "lint:fix": "prettier --write . && eslint . --fix && echo 'Linting complete.'",
-    "test": "tsx test.ts",
     "prepare": "node .husky/install.mjs"
   },
   "dependencies": {

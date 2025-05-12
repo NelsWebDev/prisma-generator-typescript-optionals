@@ -119,13 +119,27 @@ function getModelTs(
   typeNameMap: Map<string, string>,
   usedCustomTypes: Set<keyof typeof CUSTOM_TYPES>,
 ): string {
+  const getDefinition = (
+    name: string,
+    resolvedType: string,
+    opts: { isRequired: boolean; isList: boolean; isRelation: boolean },
+  ) => {
+    const { isRequired, isList, isRelation } = opts;
+
+    const makeOptional =
+      (!isRequired && config.optionalNullables && !isRelation) ||
+      (isRelation && !isRequired && config.optionalRelations);
+
+    const typeStr = `${resolvedType}${isList ? "[]" : ""}`;
+    const finalType = makeOptional
+      ? typeStr
+      : `${typeStr}${!isRequired && !makeOptional ? " | undefined" : ""}`;
+
+    return `  ${name}${makeOptional ? "?" : ""}: ${finalType};`;
+  };
+
   const fields = modelData.fields
     .map(({ name, kind, type, isRequired, isList }) => {
-      const getDefinition = (resolvedType: string, optional = false) =>
-        "  " +
-        `${name}${optional || (!isRequired && config.optionalNullables) ? "?" : ""}: ` +
-        `${resolvedType}${isList ? "[]" : ""}${!isRequired ? " | null" : ""};`;
-
       switch (kind) {
         case "scalar": {
           const typeGetter = SCALAR_TYPE_GETTERS[type];
@@ -136,28 +150,46 @@ function getModelTs(
           if (resolvedType in CUSTOM_TYPES) {
             usedCustomTypes.add(resolvedType as keyof typeof CUSTOM_TYPES);
           }
-          return getDefinition(resolvedType);
-        }
-        case "object": {
-          const modelName = modelNameMap.get(type);
-          const typeName = typeNameMap.get(type);
-          if (typeName) {
-            return getDefinition(typeName); // Type relations are never optional or omitted
-          } else if (modelName) {
-            return config.omitRelations ? null : getDefinition(modelName, config.optionalRelations);
-          } else {
-            throw new Error(`Unknown model name: ${type}`);
-          }
+          return getDefinition(name, resolvedType, {
+            isRequired,
+            isList,
+            isRelation: false,
+          });
         }
         case "enum": {
           const enumName = enumNameMap.get(type);
           if (!enumName) {
             throw new Error(`Unknown enum name: ${type}`);
           }
-          return getDefinition(enumName);
+          return getDefinition(name, enumName, {
+            isRequired,
+            isList,
+            isRelation: false,
+          });
+        }
+        case "object": {
+          if (config.omitRelations) return null;
+
+          const modelName = modelNameMap.get(type);
+          const typeName = typeNameMap.get(type);
+          const resolvedType = typeName ?? modelName;
+
+          if (!resolvedType) {
+            throw new Error(`Unknown model/type name: ${type}`);
+          }
+
+          return getDefinition(name, resolvedType, {
+            isRequired,
+            isList,
+            isRelation: true,
+          });
         }
         case "unsupported":
-          return getDefinition("any");
+          return getDefinition(name, "any", {
+            isRequired,
+            isList,
+            isRelation: false,
+          });
         default:
           throw new Error(`Unknown field kind: ${kind}`);
       }

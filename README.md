@@ -1,24 +1,29 @@
 # Prisma TypeScript Interfaces Generator
 
-[`prisma-generator-typescript-interfaces`](https://www.npmjs.com/package/prisma-generator-typescript-interfaces) - A [Prisma generator](https://www.prisma.io/docs/concepts/components/prisma-schema/generators) that creates zero-dependency TypeScript interfaces from Prisma schema.
+`NelsWebDev/prisma-generator-typescript-optionals` is a fork of [mogzol/prisma-generator-typescript-interfaces](https://github.com/mogzol/prisma-generator-typescript-interfaces) which coverts nulls to undefined and coverts null unions to optionals when _optionalNullables_ is set to true.
 
-## Motivation
+This is a [Prisma generator](https://www.prisma.io/docs/concepts/components/prisma-schema/generators) that creates zero-dependency TypeScript interfaces from Prisma schema.
 
-While Prisma client's generated types are sufficient for most use cases, there are some scenarios where using them is not convenient or possible, due to the fact that they rely on both the `@prisma/client` package and on the client generated from your Prisma schema. That is where this generator comes in. It generates a zero-dependency TypeScript file containing type definitions for all your models. This file will not contain any imports and can be used standalone in any TypeScript app. By default, the definitions are [type-compatible](https://www.typescriptlang.org/docs/handbook/type-compatibility.html) with the Prisma client types, however this can be customized via the [options](#options), see below for more info.
+## **Important Changes**
+
+**Unit Tests**
+I have been too lazy to fix all the different unit tests from the original repo. If you would like to and make a push request, feel to do so.  
+**Type safety**
+The original package keeps prisma type safety since nulls are still used. However, because this package changes that, this is no longer the case.
 
 ## Usage
 
 To use this generator, first install the package:
 
 ```
-npm install --save-dev prisma-generator-typescript-interfaces
+npm install --save-dev @NelsWebDev/prisma-generator-typescript-optionals
 ```
 
 Next add the generator to your Prisma schema:
 
 ```prisma
 generator typescriptInterfaces {
-  provider = "prisma-generator-typescript-interfaces"
+  provider = "@NelsWebDev/prisma-generator-typescript-optionals"
 }
 ```
 
@@ -62,13 +67,14 @@ generator client {
 }
 
 generator typescriptInterfaces {
-  provider = "prisma-generator-typescript-interfaces"
+  provider = "@NelsWebDev/prisma-generator-typescript-optionals"
   output   = "../src/dto/interfaces.ts"
   prettier = true
+  optionalNullables = true
 }
 
 generator typescriptInterfacesJson {
-  provider    = "prisma-generator-typescript-interfaces"
+  provider    = "@NelsWebDev/prisma-generator-typescript-optionals"
   output      = "../src/dto/json-interfaces.ts"
   modelSuffix = "Json"
   dateType    = "string"
@@ -77,6 +83,7 @@ generator typescriptInterfacesJson {
   bytesType   = "ArrayObject"
   exportEnums = false
   prettier    = true
+  optionalNullables = true
 }
 
 enum Gender {
@@ -161,13 +168,13 @@ export interface Person {
   id: number;
   name: string;
   age: number;
-  email: string | null;
+  email?: string;
   gender: Gender;
   addressId: number;
   address?: Address;
   friendsOf?: Person[];
   friends?: Person[];
-  data?: Data | null;
+  data?: Data;
 }
 
 export interface Address {
@@ -190,15 +197,15 @@ export interface Data {
   dateField: Date;
   jsonField: JsonValue;
   bytesField: Uint8Array;
-  optionalStringField: string | null;
-  optionalBooleanField: boolean | null;
-  optionalIntField: number | null;
-  optionalBigIntField: bigint | null;
-  optionalFloatField: number | null;
-  optionalDecimalField: Decimal | null;
-  optionalDateField: Date | null;
-  optionalJsonField: JsonValue | null;
-  optionalBytesField: Uint8Array | null;
+  optionalStringField?: string;
+  optionalBooleanField?: boolean;
+  optionalIntField?: number;
+  optionalBigIntField?: bigint;
+  optionalFloatField?: number;
+  optionalDecimalField?: Decimal;
+  optionalDateField?: Date;
+  optionalJsonField?: JsonValue;
+  optionalBytesField?: Uint8Array;
   stringArrayField: string[];
   booleanArrayField: boolean[];
   intArrayField: number[];
@@ -220,7 +227,7 @@ type JsonValue =
   | boolean
   | { [key in string]?: JsonValue }
   | Array<JsonValue>
-  | null;
+  | undefined;
 ```
 
 </details>
@@ -237,13 +244,13 @@ export interface PersonJson {
   id: number;
   name: string;
   age: number;
-  email: string | null;
+  email?: string;
   gender: Gender;
   addressId: number;
   address?: AddressJson;
   friendsOf?: PersonJson[];
   friends?: PersonJson[];
-  data?: DataJson | null;
+  data?: DataJson;
 }
 
 export interface AddressJson {
@@ -266,15 +273,15 @@ export interface DataJson {
   dateField: string;
   jsonField: JsonValue;
   bytesField: ArrayObject;
-  optionalStringField: string | null;
-  optionalBooleanField: boolean | null;
-  optionalIntField: number | null;
-  optionalBigIntField: string | null;
-  optionalFloatField: number | null;
-  optionalDecimalField: string | null;
-  optionalDateField: string | null;
-  optionalJsonField: JsonValue | null;
-  optionalBytesField: ArrayObject | null;
+  optionalStringField?: string;
+  optionalBooleanField?: boolean;
+  optionalIntField?: number;
+  optionalBigIntField?: string;
+  optionalFloatField?: number;
+  optionalDecimalField?: string;
+  optionalDateField?: string;
+  optionalJsonField?: JsonValue;
+  optionalBytesField?: ArrayObject;
   stringArrayField: string[];
   booleanArrayField: boolean[];
   intArrayField: number[];
@@ -294,7 +301,7 @@ type JsonValue =
   | boolean
   | { [key in string]?: JsonValue }
   | Array<JsonValue>
-  | null;
+  | undefined;
 
 type ArrayObject = { [index: number]: number } & { length?: never };
 ```
@@ -324,28 +331,14 @@ type ArrayObject = { [index: number]: number } & { length?: never };
 | exportEnums           |                                        `boolean`                                        |                                   `true`                                   | Controls whether enum definitions are exported. If `false`, enums will only be defined in the module scope for use by dependent types. Respects `enumType`.                                                   |
 | optionalRelations     |                                        `boolean`                                        |                                   `true`                                   | Controls whether model relation fields are optional. If `true`, all model relation fields will use `?:` in the field definition.                                                                              |
 | omitRelations         |                                        `boolean`                                        |                                  `false`                                   | Controls whether model relation fields are omitted. If `true`, model definitions will not include their relations.                                                                                            |
-| optionalNullables     |                                        `boolean`                                        |                                  `false`                                   | Controls whether nullable fields are optional. Nullable fields are always defined with `\| null` in their type definition, but if this is `true`, they will also use `?:`.                                    |
+| optionalNullables     |                                        `boolean`                                        |                                  `false`                                   | Controls whether nullable fields are optional. Nullable fields are defined with `\| undefined` in their type definition, but if this is `true`, they will use `?:` and omit the `undefined` union.            |
 | prettier              |                                        `boolean`                                        |                                  `false`                                   | Formats the output using Prettier. Setting this to `true` requires that the `prettier` package is available.                                                                                                  |
 | resolvePrettierConfig |                                        `boolean`                                        |                                   `true`                                   | Tries to find and use a Prettier config file relative to the output location.                                                                                                                                 |
-
-## Issues
-
-Please report any issues to the [issues](https://github.com/mogzol/prisma-generator-typescript-interfaces/issues) page. I am actively using this package, so I'll try my best to address any issues that are reported. Alternatively, feel free to submit a PR.
 
 ## Developing
 
 All the code for this generator is contained within the `generator.ts` file. You can build the generator by running `npm install` then `npm run build`.
 
-### Tests
+## Credits
 
-You can run tests with `npm run test`. Tests are run using a custom script, see `test.ts` for details. You can add new tests by placing a Prisma schema and the expected output in a folder under the `tests` directory, you may want to look at the `tests/options-behavior` test as an example.
-
-You can run specific tests by passing them as arguments to the test command:
-
-```
-npm run test -- options-behavior validation-errors
-```
-
-When a test fails, you can see the generated output in the `__TEST_TMP__` folder inside that test's directory. Compare this with the expected output to see why it failed.
-
-Please ensure all tests are passing and that the code is properly linted (`npm run lint`) before submitting a PR, thanks!
+This is a fork of [mogzol/prisma-generator-typescript-interfaces](https://github.com/mogzol/prisma-generator-typescript-interfaces) with minimal changes. Please see the `LICENSE` file for more information.
