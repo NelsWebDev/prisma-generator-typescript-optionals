@@ -23,7 +23,7 @@ Next add the generator to your Prisma schema:
 
 ```prisma
 generator typescriptInterfaces {
-  provider = "@nelswebdev/prisma-generator-typescript-optionals"
+  provider = "prisma-generator-typescript-optionals"
 }
 ```
 
