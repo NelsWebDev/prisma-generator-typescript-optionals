@@ -1,6 +1,6 @@
 {
   "name": "@nelswebdev/prisma-generator-typescript-optionals",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "Generate zero-dependency Typescript interfaces from Prisma schema",
   "author": "NelsWebDev",
   "license": "MIT",
@@ -14,7 +14,7 @@
     "generator.js"
   ],
   "bin": {
-    "prisma-generator-typescript-interfaces": "generator.js"
+    "prisma-generator-typescript-optionals": "generator.js"
   },
   "scripts": {
     "build": "tsc -p tsconfig.build.json",
