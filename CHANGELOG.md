@@ -1,3 +1,7 @@
+## 1.0.4
+
+Updated default headerComment
+
 ## 1.0.3
 
 Updated documentation (needed to make npm happy)
